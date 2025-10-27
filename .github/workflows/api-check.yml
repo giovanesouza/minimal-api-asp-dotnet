@@ -1,0 +1,24 @@
+name: ASP.NET API Build
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🔄 Code checkout
+      uses: actions/checkout@v3
+
+    - name: 🧰 Install .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: 📦 Restore dependencies
+      run: dotnet restore ./Api/minimal-api.csproj
+
+    - name: 🛠️ Build the project
+      run: dotnet build ./Api/minimal-api.csproj --no-restore
