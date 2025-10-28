@@ -5,7 +5,7 @@ Please make sure that the pull request is limited to one type (docs, feature, et
 -->
 
 <!-- If this pull request closes an issue, please mention the issue number below -->
-Closes # <!-- Issue # here -->
+ <!-- Issue # here -->
 
 ## 📑 Description
 
@@ -26,11 +26,15 @@ Describe what has been done in this PR.
 
 ## ✅ Checklist
 <!-- Make sure your pr passes the CI checks and do check the following fields as needed -->
-- [ ] 🎨 Code follows project style guidelines
-- [ ] 📦 All dependencies are up to date
-- [ ] 🧪 All the tests have passed
-- [ ] 📚 Documentation updated
-- [ ] 👀 PR ready for review
+
+- [ ] ℹ️ The PR has title and description defined.
+- [ ] 📝 You've assigned the PR to yourself.
+- [ ] 🏷️ The PR has the correct and necessary tags.
+- [ ] 🎨 Code follows project style guidelines.
+- [ ] 📦 All dependencies are up to date.
+- [ ] 🧪 All the tests have.
+- [ ] 📚 Documentation updated.
+- [ ] 👀 PR ready for review.
 
 ## ℹ Additional Information
 <!-- Any additional information like breaking changes, dependencies added, screenshots, comparisons between new and old behavior, etc. -->
