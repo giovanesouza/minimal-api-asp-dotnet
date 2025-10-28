@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MinimalApi.Infrastructure.Db;
 
@@ -10,9 +11,11 @@ using MinimalApi.Infrastructure.Db;
 namespace MinimalApi.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20251027034345_SeedAdministrator")]
+    partial class SeedAdministrator
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,8 +39,8 @@ namespace MinimalApi.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("varchar(60)");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<string>("Profile")
                         .IsRequired()
@@ -53,7 +56,7 @@ namespace MinimalApi.Migrations
                         {
                             Id = 1,
                             Email = "admin@test.com",
-                            Password = "$2a$11$ENYYV.ux.Asmb6sPVBB9zuAizRdVVkFjFr5za7jVpvG7dEChK53T2",
+                            Password = "123456",
                             Profile = "Admin"
                         });
                 });
