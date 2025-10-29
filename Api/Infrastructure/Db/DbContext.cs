@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MinimalApi.Domain.Entities;
 namespace MinimalApi.Infrastructure.Db;
+using BCrypt.Net;
 
 public class DBContext : DbContext
 {
@@ -11,6 +12,19 @@ public class DBContext : DbContext
     }
 
     public DbSet<Administrator> Administrators { get; set; } = default!;
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Administrator>().HasData(
+            new Administrator {
+                Id = 1,
+                Email = "admin@test.com",
+                Password = BCrypt.HashPassword("123456"),
+                Profile = "Admin"
+            }
+        );
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         if (!optionsBuilder.IsConfigured)
@@ -22,7 +36,6 @@ public class DBContext : DbContext
                     connectionString,
                     ServerVersion.AutoDetect(connectionString)
                 );
-                return;
             }
         }
     }
