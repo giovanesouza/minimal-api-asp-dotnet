@@ -32,7 +32,7 @@ Describe what has been done in this PR.
 - [ ] 🏷️ The PR has the correct and necessary tags.
 - [ ] 🎨 Code follows project style guidelines.
 - [ ] 📦 All dependencies are up to date.
-- [ ] 🧪 All the tests have.
+- [ ] 🧪 All the tests have passed.
 - [ ] 📚 Documentation updated.
 - [ ] 👀 PR ready for review.
 
