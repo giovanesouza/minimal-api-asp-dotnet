@@ -42,12 +42,12 @@ app.MapPost("/administrators/login", ([FromBody] LoginDTO loginDTO, IAdministrat
 #endregion
 
 #region Vehicles
-app.MapPost("/vehicles", ([FromBody] VehicleDTO VehicleDTO, IVehicleService vehicleService) => {
+app.MapPost("/vehicles", ([FromBody] VehicleDTO vehicleDTO, IVehicleService vehicleService) => {
     var vehicle = new Vehicle
     {
-        Name = VehicleDTO.Name,
-        Brand = VehicleDTO.Brand,
-        Year = VehicleDTO.Year
+        Name = vehicleDTO.Name,
+        Brand = vehicleDTO.Brand,
+        Year = vehicleDTO.Year
     };
     var createdVehicle = vehicleService.Create(vehicle);
     return Results.Created($"/vehicle/{createdVehicle.Id}", createdVehicle);
@@ -59,10 +59,31 @@ app.MapGet("/vehicles", ([FromQuery] int? page, IVehicleService vehicleService) 
     return Results.Ok(vehicles);
 }).WithTags("Vehicles");
 
-app.MapGet("/vehicles/{id}", ([FromRoute] int id, IVehicleService vehicleService) => {
+app.MapGet("/vehicles/{id}", ([FromRoute] int id, IVehicleService vehicleService) =>
+{
     var vehicle = vehicleService.GetById(id);
     if (vehicle == null) return Results.NotFound();
     return Results.Ok(vehicle);
+}).WithTags("Vehicles");
+
+app.MapPut("/vehicles/{id}", ([FromRoute] int id, VehicleDTO vehicleDTO, IVehicleService vehicleService) =>
+{
+    var vehicle = vehicleService.GetById(id);
+    if (vehicle == null) return Results.NotFound();
+
+    vehicle.Name = vehicleDTO.Name;
+    vehicle.Brand = vehicleDTO.Brand;
+    vehicle.Year = vehicleDTO.Year;
+
+    vehicleService.Update(vehicle);
+    return Results.Ok(vehicle);
+}).WithTags("Vehicles");
+
+app.MapDelete("/vehicles/{id}", ([FromRoute] int id, IVehicleService vehicleService) => {
+    var vehicle = vehicleService.GetById(id);
+    if (vehicle == null) return Results.NotFound();
+    vehicleService.Delete(vehicle);
+    return Results.NoContent();  
 }).WithTags("Vehicles");
 #endregion
 
