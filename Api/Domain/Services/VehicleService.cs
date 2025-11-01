@@ -5,10 +5,10 @@ using MinimalApi.Infrastructure.Db;
 
 namespace MinimalApi.Domain.Services
 {
-    public class VechicleService : IVechicleService
+    public class VehicleService : IVehicleService
     {
         private readonly DBContext _dBContext;
-        public VechicleService(DBContext dBContext)
+        public VehicleService(DBContext dBContext)
         {
             _dBContext = dBContext;
         }
