@@ -42,13 +42,32 @@ app.MapPost("/administrators/login", ([FromBody] LoginDTO loginDTO, IAdministrat
 #endregion
 
 #region Vehicles
+static ValidationErrors validateDTO(VehicleDTO vehicleDTO)
+{
+    var validation = new ValidationErrors
+    {
+        Messages = []
+    };
+
+    if (string.IsNullOrEmpty(vehicleDTO.Name)) validation.Messages.Add("The 'Name' field is required.");
+    if (string.IsNullOrEmpty(vehicleDTO.Brand)) validation.Messages.Add("The 'Brand' field is required.");
+    if (vehicleDTO.Year <= 1950) validation.Messages.Add("The 'Year' field must be greater than 1950.");
+
+    return validation;
+}
+
 app.MapPost("/vehicles", ([FromBody] VehicleDTO vehicleDTO, IVehicleService vehicleService) => {
+
+    var validation = validateDTO(vehicleDTO);
+    if (validation.Messages.Count > 0) return Results.BadRequest(validation);
+
     var vehicle = new Vehicle
     {
         Name = vehicleDTO.Name,
         Brand = vehicleDTO.Brand,
         Year = vehicleDTO.Year
     };
+
     var createdVehicle = vehicleService.Create(vehicle);
     return Results.Created($"/vehicle/{createdVehicle.Id}", createdVehicle);
 }).WithTags("Vehicles");
@@ -70,6 +89,9 @@ app.MapPut("/vehicles/{id}", ([FromRoute] int id, VehicleDTO vehicleDTO, IVehicl
 {
     var vehicle = vehicleService.GetById(id);
     if (vehicle == null) return Results.NotFound();
+
+    var validation = validateDTO(vehicleDTO);
+    if (validation.Messages.Count > 0) return Results.BadRequest(validation);
 
     vehicle.Name = vehicleDTO.Name;
     vehicle.Brand = vehicleDTO.Brand;
