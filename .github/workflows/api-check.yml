@@ -1,4 +1,4 @@
-name: ASP.NET API Build
+name: Build + Test
 
 on:
   pull_request:
@@ -22,3 +22,6 @@ jobs:
 
     - name: 🛠️ Build the project
       run: dotnet build ./Api/minimal-api.csproj --no-restore
+
+      #- name: 🧪 Run tests
+      #  run: dotnet test ./Api.Tests/Api.Tests.csproj --no-build --verbosity normal
