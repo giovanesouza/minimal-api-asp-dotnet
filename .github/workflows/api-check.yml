@@ -23,6 +23,5 @@ jobs:
       - name: 🛠️ Build the project
         run: dotnet build ./Api/minimal-api.csproj --no-restore
 
-      # Futuro passo de testes
       #- name: 🧪 Run tests
       #  run: dotnet test ./Api.Tests/Api.Tests.csproj --no-build --verbosity normal
