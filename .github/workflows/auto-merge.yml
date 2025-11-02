@@ -1,52 +1,71 @@
-name: Auto Merge PR
+name: Auto-Merge PR
 
 on:
-  repository_dispatch:
-    types: [trigger-auto-merge]
+  workflow_run:
+    workflows: ["API Build + Test"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
 
 jobs:
   auto-merge:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
-    - name: 🔄 Checkout
-      uses: actions/checkout@v3
+      - name: 🔄 Checkout code
+        uses: actions/checkout@v3
 
-    - name: 🧾 Merge PR
-      uses: actions/github-script@v7
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          const pr_number = context.payload.client_payload.pr_number;
-          const { data: pr } = await github.rest.pulls.get({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: pr_number
-          });
+      - name: 🤖 Merge PR and delete branch
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const workflow_run = context.payload.workflow_run;
 
-          if (pr.state !== 'open') {
-            core.setFailed(`PR #${pr_number} is not open.`);
-            return;
-          }
+            // Garante que o workflow de build está vinculado a um PR
+            if (!workflow_run.pull_requests || workflow_run.pull_requests.length === 0) {
+              core.info("No PR associated with this workflow run. Exiting.");
+              return;
+            }
 
-          if (!pr.mergeable) {
-            core.setFailed(`PR #${pr_number} is not mergeable.`);
-            return;
-          }
+            const pr_number = workflow_run.pull_requests[0].number;
 
-          await github.rest.pulls.merge({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            pull_number: pr_number,
-            merge_method: 'merge' // 'merge', 'squash' or 'rebase'
-          });
-
-          // Delete the PR branch (if it different of the main/master branch)
-          const branch = pr.head.ref;
-          if (branch !== 'main' && branch !== 'master') {
-            await github.rest.git.deleteRef({
+            // Get current PR details
+            const { data: pr } = await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: `heads/${branch}`
+              pull_number: pr_number
             });
-          }
+
+            // Verify if PR is open and merbeable
+            if (pr.state !== 'open') {
+              core.setFailed(`PR #${pr_number} is not open.`);
+              return;
+            }
+            if (!pr.mergeable) {
+              core.setFailed(`PR #${pr_number} is not mergeable.`);
+              return;
+            }
+
+            // Faz o merge automático
+            await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr_number,
+              merge_method: 'squash' // pode ser merge ou rebase
+            });
+            core.info(`✅ PR #${pr_number} merged successfully.`);
+
+            // Deleta a branch do PR, se não for main/master
+            const branch = pr.head.ref;
+            if (branch !== 'main' && branch !== 'master') {
+              await github.rest.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: `heads/${branch}`
+              });
+              core.info(`🗑️ Branch '${branch}' deleted.`);
+            }
