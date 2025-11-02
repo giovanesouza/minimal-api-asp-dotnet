@@ -31,7 +31,7 @@ public class DBContext : DbContext
     {
         if (!optionsBuilder.IsConfigured)
         {
-            var connectionString = _configurationAppSettings.GetConnectionString("mysql")?.ToString();
+            var connectionString = _configurationAppSettings.GetConnectionString("MySql")?.ToString();
             if (connectionString != null)
             {
                 optionsBuilder.UseMySql(
