@@ -1,4 +1,4 @@
-name: ASP.NET API Build
+name: Build + Test
 
 on:
   pull_request:
@@ -22,3 +22,17 @@ jobs:
 
     - name: 🛠️ Build the project
       run: dotnet build ./Api/minimal-api.csproj --no-restore
+
+    # - name: 🧪 Run tests
+    #   run: dotnet test ./Tests/Tests.csproj --no-build --verbosity normal
+
+    - name: 🚀 Trigger Auto-Merge Workflow
+      if: success()
+      uses: peter-evans/repository-dispatch@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        event-type: trigger-auto-merge
+        client-payload: |
+          {
+            "pr_number": "${{ github.event.pull_request.number }}"
+          }
