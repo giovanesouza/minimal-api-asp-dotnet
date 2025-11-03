@@ -1,38 +1,80 @@
-name: Api check
+name: API CI/CD
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ main ] # Trigger the workflow on pull requests to the main branch
 
 jobs:
   build:
-    name: Build + Test
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
-    - name: 🔄 Code checkout
+    - name: 🔄 Checkout repository
       uses: actions/checkout@v3
+      # Checkout the repository so we can build and test the code
 
-    - name: 🧰 Install .NET SDK
+    - name: 🧰 Setup .NET SDK
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '9.0.x'
+      # Install the specified version of .NET SDK
 
     - name: 📦 Restore dependencies
       run: dotnet restore ./Api/MinimalApi.csproj
+      # Restore all NuGet dependencies for the API project
 
-    - name: 🛠️ Build the project
-      run: dotnet build ./Api/MinimalApi.csproj --no-restore
+    - name: 🛠️ Build project
+      run: dotnet build ./Api/MinimalApi.csproj --no-restore --configuration Release --verbosity minimal
+      # Build the project in Release mode without restoring dependencies again
+      # Minimal verbosity keeps logs concise but informative
 
-    - name: 🧪 Run tests and generate .trx report
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: build # Ensure the build job completes successfully before running tests
+
+    steps:
+    - name: 🔄 Checkout repository
+      uses: actions/checkout@v3
+      # Checkout repository again for this job (jobs run in isolated runners)
+
+    - name: 🧰 Setup .NET SDK
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '9.0.x'
+      # Setup .NET SDK for test job
+
+    - name: 🧪 Run tests with coverage
       run: |
-        mkdir -p ./TestResults
-        dotnet test ./Api.Tests/Api.Tests.csproj --no-build --logger "trx;LogFileName=./TestResults/test-results.trx"
-     
-    - name: 📄 Save test results
+        # Clean previous test and coverage results
+        rm -rf ./TestResults ./CoverageResults
+        mkdir -p ./TestResults ./CoverageResults
+
+        # Run tests, generate TRX report, and collect code coverage
+        dotnet test ./Api.Tests/Api.Tests.csproj \
+          --no-build \
+          --configuration Release \
+          --logger "trx;LogFileName=./TestResults/test-results.trx" \
+          --collect:"XPlat Code Coverage" \
+          --results-directory ./CoverageResults \
+          --verbosity minimal
+      # --no-build avoids rebuilding since build job already ran
+      # TRX report allows detailed test results
+      # XPlat Code Coverage generates coverage data for analysis
+
+    - name: 📄 Upload test results
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: test-results
         path: ./TestResults/test-results.trx
+      # Upload TRX test results as artifact, even if tests fail
 
+    - name: 📄 Upload coverage results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-results
+        path: ./CoverageResults
+      # Upload code coverage results as artifact for further inspection
