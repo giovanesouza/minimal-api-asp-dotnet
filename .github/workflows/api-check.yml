@@ -21,7 +21,7 @@ jobs:
       run: dotnet restore ./Api/minimal-api.csproj
 
     - name: 🛠️ Build the project
-      run: dotnet build ./Api/minimal-api.csproj --no-restore
+      run: dotnet build ./Api/MinimalApi.csproj --no-restore
 
     - name: 🧪 Run tests
       run: dotnet test ./Test/Test.csproj --no-build --logger "trx;LogFileName=test-results.trx"
