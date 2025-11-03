@@ -1,4 +1,4 @@
-name: Build + Test
+name: Api check
 
 on:
   pull_request:
@@ -6,6 +6,7 @@ on:
 
 jobs:
   build:
+    name: Build + Test
     runs-on: ubuntu-latest
 
     steps:
@@ -23,13 +24,15 @@ jobs:
     - name: 🛠️ Build the project
       run: dotnet build ./Api/MinimalApi.csproj --no-restore
 
-    - name: 🧪 Run tests
-      run: dotnet test ./Test/Test.csproj --no-build --logger "trx;LogFileName=test-results.trx"
+    - name: 🧪 Run tests and generate .trx report
+      run: |
+        mkdir -p ./TestResults
+        dotnet test ./Api.Tests/Api.Tests.csproj --no-build --logger "trx;LogFileName=./TestResults/test-results.trx"
      
     - name: 📄 Save test results
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: test-results
-        path: ./Test/TestResults/**/*.trx
+        path: ./TestResults/test-results.trx
 
