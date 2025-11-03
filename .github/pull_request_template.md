@@ -21,6 +21,7 @@ Describe what has been done in this PR.
 - [ ] ✨ New feature
 - [ ] 🔨 Refactoring
 - [ ] 📝 Documentation
+- [ ] 🧪 Test
 - [ ] 🧱 Build system or CI/CD
 
 
