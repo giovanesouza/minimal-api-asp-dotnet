@@ -1,79 +1,78 @@
 name: API CI/CD
 
+# 🚀 This workflow runs on pushes and pull requests targeting the "main" branch
 on:
+  push:
+    branches: [ main ]
   pull_request:
-    branches: [ main ] # Trigger workflow on pull requests targeting 'main' branch
+    branches: [ main ]
 
 jobs:
+  # 🏗️ Build job
   build:
     name: Build
     runs-on: ubuntu-latest
 
     steps:
-    - name: 🔄 Checkout repository
-      uses: actions/checkout@v3
-      # Fetch the source code from the repository
+      # 🔄 Step 1: Checkout the repository
+      - name: 🔄 Checkout repository
+        uses: actions/checkout@v4
 
-    - name: 🧰 Setup .NET SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '9.0.x'
-      # Install the required .NET SDK version
+      # 🧰 Step 2: Install the .NET SDK
+      - name: 🧰 Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
 
-    - name: 📦 Restore dependencies
-      run: dotnet restore ./Api/MinimalApi.csproj
-      # Restore all NuGet packages for the API project
+      # 📦 Step 3: Restore NuGet dependencies
+      - name: 📦 Restore dependencies
+        run: dotnet restore ./Api/MinimalApi.csproj
 
-    - name: 🛠️ Build project
-      run: dotnet build ./Api/MinimalApi.csproj --no-restore --configuration Release --verbosity minimal
-      # Build the project in Release mode without re-restoring dependencies
+      # 🛠️ Step 4: Build the project in Release mode
+      - name: 🛠️ Build the project
+        run: dotnet build ./Api/MinimalApi.csproj --no-restore --configuration Release
 
+  # 🧪 Test job
   test:
     name: Test
     runs-on: ubuntu-latest
-    needs: build # Ensure tests only run if the build passes
+    needs: build # ⏳ Wait for the build job to finish successfully
 
     steps:
-    - name: 🔄 Checkout repository
-      uses: actions/checkout@v3
-      # Each job runs in a separate environment, so checkout is required again
+      # 🔄 Step 1: Checkout the repository
+      - name: 🔄 Checkout repository
+        uses: actions/checkout@v4
 
-    - name: 🧰 Setup .NET SDK
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '9.0.x'
-      # Setup .NET SDK for the test environment
+      # 🧰 Step 2: Install the .NET SDK
+      - name: 🧰 Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
 
-    - name: 🧪 Run tests with coverage
-      run: |
-        # Clean previous test and coverage results
-        rm -rf ./TestResults ./CoverageResults
-        mkdir -p ./TestResults ./CoverageResults
+      # 🧪 Step 3: Run unit tests and generate a .trx report
+      - name: 🧪 Run tests and generate .trx report
+        run: |
+          # Create a directory to store test results
+          mkdir -p TestResults
 
-        # Run tests, generate TRX report, and collect code coverage
-        dotnet test ./Test/Test.csproj \
-          --no-build \
-          --configuration Release \
-          --logger "trx;LogFileName=./TestResults/test-results.trx" \
-          --collect:"XPlat Code Coverage" \
-          --results-directory ./CoverageResults \
-          --verbosity minimal
-      # --no-build ensures we reuse the already-built binaries from the build job
-      # TRX logger produces a detailed test report
-      # XPlat Code Coverage generates cross-platform coverage data
+          # Run tests using the .NET CLI
+          # - --no-build: skip rebuilding since build job already did it
+          # - --logger "trx": generate a TRX test report file
+          # - --results-directory: specify where to save results
+          # - --verbosity normal: display detailed test output
+          dotnet test ./Test/Test.csproj \
+            --no-build \
+            --configuration Release \
+            --logger "trx;LogFileName=$(pwd)/TestResults/test-results.trx" \
+            --results-directory $(pwd)/TestResults \
+            --verbosity normal
 
-    - name: 📄 Upload test results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-results
-        path: ./TestResults/test-results.trx
-      # Upload TRX results as an artifact, even if tests fail
+          echo "✅ Test execution completed."
 
-    - name: 📄 Upload coverage results
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-results
-        path: ./CoverageResults
-      # Upload coverage data for inspection or external analysis
+      # 📄 Step 4: Upload the test results as an artifact
+      - name: 📄 Upload test results (.trx)
+        if: always() # Always upload even if tests fail
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/test-results.trx
