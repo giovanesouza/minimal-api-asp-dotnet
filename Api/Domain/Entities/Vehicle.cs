@@ -19,6 +19,7 @@ namespace MinimalApi.Domain.Entities
         public string Brand { get; set; } = default!;
 
         [Required]
+        [Range(1950, 2100)]
         public int Year { get; set; } = default!;
     }
 }

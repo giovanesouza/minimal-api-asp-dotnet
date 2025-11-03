@@ -23,5 +23,12 @@ jobs:
     - name: 🛠️ Build the project
       run: dotnet build ./Api/minimal-api.csproj --no-restore
 
-      #- name: 🧪 Run tests
-      #  run: dotnet test ./Api.Tests/Api.Tests.csproj --no-build --verbosity normal
+    - name: 🧪 Run tests
+      run: dotnet test ./Test/Test.csproj --no-build --logger "trx;LogFileName=test-results.trx"
+     
+    - name: 📄 Save test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: ./Test/TestResults/
