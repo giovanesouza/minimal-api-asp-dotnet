@@ -58,11 +58,7 @@ jobs:
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
           # Run tests with detailed verbosity so individual test names appear
-          # dotnet test --logger "console;verbosity=detailed" | tee TestOutput.log
-          
-          dotnet test --configuration Release \
-            --logger "console;verbosity=detailed" \
-            | tee TestOutput.log
+          dotnet test --logger "console;verbosity=detailed" | tee TestOutput.log
 
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "📋 Test Summary:"
@@ -80,3 +76,9 @@ jobs:
           echo "🏁 Test run completed."
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
+      - name: 📄 Upload test results (.trx)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: Test/TestResults/test_results.trx
