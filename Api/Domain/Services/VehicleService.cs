@@ -24,15 +24,13 @@ namespace MinimalApi.Domain.Services
         {
             var query = _dBContext.Vehicles.AsQueryable();
 
-            if (!string.IsNullOrEmpty(name))
-            {
-                query = query.Where(v => v.Name.Contains(name));
-            }
+            if (!string.IsNullOrEmpty(name)) query = query.Where(v => v.Name.Contains(name));
+            if (!string.IsNullOrEmpty(brand)) query = query.Where(v => v.Brand.Contains(brand));
 
             int itemsPerPage = 10;
 
             if (page != null) query = query.Skip(((int)page - 1) * itemsPerPage).Take(itemsPerPage);
-            return query.ToList();
+            return [.. query]; // Collection expansion syntax | = query.ToList();
         }
 
         public Vehicle? GetById(int id)
