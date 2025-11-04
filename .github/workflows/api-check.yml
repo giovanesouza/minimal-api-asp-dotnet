@@ -52,6 +52,6 @@ jobs:
 
       # 🧪 Step 3: Run tests and show results
       - name: 🧪 Run tests and show output
-        run: dotnet test --logger "console;verbosity=detailed"
+        run: dotnet test --logger "console;verbosity=detailed" --logger "trx;LogFileName=test_results.trx"
 
 
