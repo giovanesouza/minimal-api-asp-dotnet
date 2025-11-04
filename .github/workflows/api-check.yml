@@ -52,16 +52,6 @@ jobs:
 
       # 🧪 Step 3: Run tests and show results
       - name: 🧪 Run tests and show output
-        run: |
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "🧩 Starting automated tests..."
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          dotnet test ./Test/Test.csproj \
-            --no-build \
-            --configuration Release \
-            --verbosity normal
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "🏁 Test run completed."
-          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        run: dotnet test --logger "console;verbosity=detailed"
 
 
