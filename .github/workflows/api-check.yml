@@ -60,8 +60,7 @@ jobs:
           # Run tests with detailed verbosity so individual test names appear
           # dotnet test --logger "console;verbosity=detailed" | tee TestOutput.log
           
-          dotnet test --no-build \
-            --configuration Release \
+          dotnet test --configuration Release \
             --logger "console;verbosity=detailed" \
             | tee TestOutput.log
 
