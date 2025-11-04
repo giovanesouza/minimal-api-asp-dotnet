@@ -58,7 +58,12 @@ jobs:
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
           # Run tests with detailed verbosity so individual test names appear
-          dotnet test --logger "console;verbosity=detailed" | tee TestOutput.log
+          # dotnet test --logger "console;verbosity=detailed" | tee TestOutput.log
+          
+          dotnet test --no-build \
+            --configuration Release \
+            --logger "console;verbosity=detailed" \
+            | tee TestOutput.log
 
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo "📋 Test Summary:"
