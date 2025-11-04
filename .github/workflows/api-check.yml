@@ -32,6 +32,7 @@ jobs:
       - name: 🛠️ Build the project
         run: dotnet build ./Api/MinimalApi.csproj --no-restore --configuration Release
 
+
   # 🧪 Test job
   test:
     name: Test
@@ -49,30 +50,33 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      # 🧪 Step 3: Run unit tests and generate a .trx report
-      - name: 🧪 Run tests and generate .trx report
+      # 🧪 Step 3: Run tests and show detailed output
+      - name: 🧪 Run Tests and Show Names
         run: |
-          # Create a directory to store test results
-          mkdir -p TestResults
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🧩 Starting automated tests..."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-          # Run tests using the .NET CLI
-          # - --no-build: skip rebuilding since build job already did it
-          # - --logger "trx": generate a TRX test report file
-          # - --results-directory: specify where to save results
-          # - --verbosity normal: display detailed test output
+          # Run tests with detailed verbosity so individual test names appear
           dotnet test ./Test/Test.csproj \
             --no-build \
             --configuration Release \
-            --logger "trx;LogFileName=$(pwd)/TestResults/test-results.trx" \
-            --results-directory $(pwd)/TestResults \
-            --verbosity normal
+            --logger "console;verbosity=detailed" \
+            | tee TestOutput.log
 
-          echo "✅ Test execution completed."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📋 Test Summary:"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
-      # 📄 Step 4: Upload the test results as an artifact
-      - name: 📄 Upload test results (.trx)
-        if: always() # Always upload even if tests fail
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results
-          path: TestResults/test-results.trx
+          # Extract summary stats from the output (Passed, Failed, Skipped)
+          PASSED=$(grep -oP 'Passed: \K[0-9]+' TestOutput.log | tail -1)
+          FAILED=$(grep -oP 'Failed: \K[0-9]+' TestOutput.log | tail -1)
+          SKIPPED=$(grep -oP 'Skipped: \K[0-9]+' TestOutput.log | tail -1)
+          TOTAL=$(grep -oP 'Total: \K[0-9]+' TestOutput.log | tail -1)
+
+          echo "✅ Passed: ${PASSED:-0} | ❌ Failed: ${FAILED:-0} | ⚠️ Skipped: ${SKIPPED:-0} | 📊 Total: ${TOTAL:-0}"
+
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🏁 Test run completed."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
