@@ -52,6 +52,27 @@ jobs:
 
       # 🧪 Step 3: Run tests and show results
       - name: 🧪 Run tests and show output
-        run: dotnet test --logger "console;verbosity=detailed" --logger "trx;LogFileName=test_results.trx"
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🧩 Starting automated tests..."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
+          # Run tests with detailed verbosity so individual test names appear
+          dotnet test --logger "console;verbosity=detailed" | tee TestOutput.log
+
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "📋 Test Summary:"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+          # Extract summary stats from the output (Passed, Failed, Skipped)
+          PASSED=$(grep -oP 'Passed: \K[0-9]+' TestOutput.log | tail -1)
+          FAILED=$(grep -oP 'Failed: \K[0-9]+' TestOutput.log | tail -1)
+          SKIPPED=$(grep -oP 'Skipped: \K[0-9]+' TestOutput.log | tail -1)
+          TOTAL=$(grep -oP 'Total: \K[0-9]+' TestOutput.log | tail -1)
+
+          echo "✅ Passed: ${PASSED:-0} | ❌ Failed: ${FAILED:-0} | ⚠️ Skipped: ${SKIPPED:-0} | 📊 Total: ${TOTAL:-0}"
+
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🏁 Test run completed."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
