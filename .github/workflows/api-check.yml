@@ -50,29 +50,60 @@ jobs:
           dotnet-version: '9.0.x'
 
       # 🧪 Step 3: Run unit tests and generate a .trx report
+        # Run tests using the .NET CLI
+        # - --no-build: skip rebuilding since build job already did it
+        # - --logger "trx": generate a TRX test report file
+        # - --results-directory: specify where to save results
+        # - --verbosity normal: display detailed test output
       - name: 🧪 Run tests and generate .trx report
         run: |
-          # Create a directory to store test results
+          echo "🧩 Starting test execution..."
           mkdir -p TestResults
 
-          # Run tests using the .NET CLI
-          # - --no-build: skip rebuilding since build job already did it
-          # - --logger "trx": generate a TRX test report file
-          # - --results-directory: specify where to save results
-          # - --verbosity normal: display detailed test output
           dotnet test ./Test/Test.csproj \
             --no-build \
             --configuration Release \
             --logger "trx;LogFileName=$(pwd)/TestResults/test-results.trx" \
             --results-directory $(pwd)/TestResults \
-            --verbosity normal
+            --verbosity detailed
 
-          echo "✅ Test execution completed."
+          echo "✅ Test execution completed successfully!"
 
-      # 📄 Step 4: Upload the test results as an artifact
+      # 🧊 Step 4: Convert TRX to HTML report
+      - name: 📊 Convert TRX to HTML report
+        run: |
+          echo "🧰 Installing trx2html tool..."
+          dotnet tool install -g trx2html
+
+          echo "🧾 Generating HTML report from TRX file..."
+          trx2html TestResults/test-results.trx TestResults/test-report.html
+
+          echo "📄 HTML report successfully generated at TestResults/test-report.html"
+
+      # 📄 Step 5: Upload the test results (.trx)
       - name: 📄 Upload test results (.trx)
         if: always() # Always upload even if tests fail
         uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: TestResults/test-results.trx
+
+      # 🌐 Step 6: Upload the HTML report
+      - name: 📤 Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-test-report
+          path: TestResults/test-report.html
+
+      # 🎉 Step 7: Final summary message
+      - name: 🎉 Final summary
+        if: always()
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ All tests executed."
+          echo "📦 TRX and HTML reports uploaded as artifacts."
+          echo "📍 You can download them from the 'Artifacts' section."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+          
