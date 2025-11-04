@@ -50,13 +50,42 @@ jobs:
         with:
           dotnet-version: '9.0.x'
 
-      # 🧪 Step 3: Run tests and show results
-      - name: 🧪 Run tests and show output
-        run: dotnet test --logger "console;verbosity=detailed" --logger "trx;LogFileName=test_results.trx"
-
-      - name: 📄 Upload test results (.trx)
+      # 🧪 Run unit tests
+      - name: 🧪 Run tests and generate .trx report
+        run: |
+          echo "🧩 Starting automated tests..."
+          dotnet test ./Test/Test.csproj \
+            --logger "console;verbosity=detailed" \
+            --logger "trx;LogFileName=test_results.trx" \
+            --results-directory ./Test/TestResults
+          echo "✅ Test execution completed."
+  
+      # 📊 Generate HTML report
+      - name: 📊 Convert TRX to HTML report
+        run: |
+          echo "🧰 Installing ReportGenerator..."
+          dotnet tool install -g dotnet-reportgenerator-globaltool
+          echo "🧾 Generating HTML report..."
+          reportgenerator \
+            -reports:./Test/TestResults/test_results.trx \
+            -targetdir:./Test/TestResults/Report \
+            -reporttypes:Html
+          echo "📄 HTML report generated at ./Test/TestResults/Report/index.html"
+  
+      # 📤 Upload the HTML report (optional but useful)
+      - name: 📤 Upload HTML report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results
-          path: Test/TestResults/test_results.trx
+          name: html-test-report
+          path: Test/TestResults/Report
+  
+      # 🎉 Summary
+      - name: 🎉 Final summary
+        if: always()
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ All tests executed."
+          echo "📊 HTML report generated and uploaded."
+          echo "📍 Download it from the 'Artifacts' section."
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
