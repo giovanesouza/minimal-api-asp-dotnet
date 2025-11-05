@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   auto-merge:
+    name: 🤖 Auto-Merge Pull Request
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
