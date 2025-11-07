@@ -51,7 +51,7 @@ jobs:
           dotnet-version: '9.0.x'
 
       # 🧪 Step 3: Run tests and show detailed output
-      - name: 🧪 Unit tests
+      - name: 🧪 Run tests
         run: dotnet test ./Test/Test.csproj --logger "console;verbosity=detailed" --logger "trx;LogFileName=test_results.trx"
       
       # 📄 Step 4: Upload test results artifact
