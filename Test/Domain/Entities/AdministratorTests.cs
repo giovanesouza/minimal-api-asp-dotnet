@@ -15,14 +15,14 @@ namespace Test.Domain.Entities
             {
                 Id = 1,
                 Email = "teste@teste.com",
-                // Password = "teste",
+                Password = "teste",
                 Profile = "admin"
             };
 
             // Assert
             Assert.AreEqual(1, admin.Id, "The Id property did not match the expected value.");
             Assert.AreEqual("teste@teste.com", admin.Email, "The Email property did not match the expected value.");
-            // Assert.AreEqual("teste", admin.Password);
+            Assert.AreEqual("teste", admin.Password, "The Password property did not match the expected value.");
             Assert.AreEqual("admin", admin.Profile, "The Profile property did not match the expected value.");
         }
 
