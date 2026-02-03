@@ -9,6 +9,8 @@ using Test.Helpers;
 
 namespace Test.Requests
 {
+    // Forces sequential execution of tests in this class to avoid parallel interference.
+    [DoNotParallelize]
     [TestClass]
     public class AdministratorCrudRequestTests
     {

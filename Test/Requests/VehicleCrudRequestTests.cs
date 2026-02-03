@@ -9,6 +9,7 @@ using Test.Helpers;
 
 namespace Test.Requests
 {
+    [DoNotParallelize]
     [TestClass]
     public class VehicleCrudRequestTests
     {
