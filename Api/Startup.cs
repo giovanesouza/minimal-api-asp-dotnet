@@ -196,7 +196,6 @@ namespace MinimalApi
                         Profile = administrator.Profile
                     });
                 })
-                .RequireAuthorization()
                 .RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" })
                 .WithTags("Administrators");
 
@@ -217,7 +216,6 @@ namespace MinimalApi
                     }
                     return Results.Ok(admins);
                 })
-                .RequireAuthorization()
                 .RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" })
                 .WithTags("Administrators");
 
@@ -233,7 +231,6 @@ namespace MinimalApi
                         Profile = administrator.Profile
                     });
                 })
-                .RequireAuthorization()
                 .RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" })
                 .WithTags("Administrators");
 
@@ -271,7 +268,6 @@ namespace MinimalApi
                     var createdVehicle = vehicleService.Create(vehicle);
                     return Results.Created($"/vehicle/{createdVehicle.Id}", createdVehicle);
                 })
-                .RequireAuthorization()
                 .RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,Editor" })
                 .WithTags("Vehicles");
 
@@ -281,7 +277,6 @@ namespace MinimalApi
                     var vehicles = vehicleService.GetAll(page);
                     return Results.Ok(vehicles);
                 })
-                .RequireAuthorization()
                 .RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" })
                 .WithTags("Vehicles");
 
@@ -292,7 +287,6 @@ namespace MinimalApi
                     if (vehicle == null) return Results.NotFound();
                     return Results.Ok(vehicle);
                 })
-                .RequireAuthorization()
                 .RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,Editor" })
                 .WithTags("Vehicles");
 
@@ -312,7 +306,6 @@ namespace MinimalApi
                     vehicleService.Update(vehicle);
                     return Results.Ok(vehicle);
                 })
-                .RequireAuthorization()
                 .RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" })
                 .WithTags("Vehicles");
 
@@ -324,7 +317,6 @@ namespace MinimalApi
                     vehicleService.Delete(vehicle);
                     return Results.NoContent();
                 })
-                .RequireAuthorization()
                 .RequireAuthorization(new AuthorizeAttribute { Roles = "Admin" })
                 .WithTags("Vehicles");
                 #endregion
