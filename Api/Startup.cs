@@ -147,7 +147,7 @@ namespace MinimalApi
                     {
                     new("Email", administrator.Email),
                     new("Profile", administrator.Profile),
-                    new(ClaimTypes.Role, administrator.Profile)
+                    new("role", administrator.Profile)
                     };
 
                     var token = new JwtSecurityToken(

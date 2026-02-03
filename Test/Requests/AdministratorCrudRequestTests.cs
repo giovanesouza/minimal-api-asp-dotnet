@@ -50,7 +50,6 @@ namespace Test.Requests
         public async Task CreateShouldReturnForbiddenWhenNotAdmin()
         {
             // Arrange
-            Setup.ClearAuthentication();
             var newAdmin = new AdministratorDTO
             {
                 Email = "forbidden@test.com",
