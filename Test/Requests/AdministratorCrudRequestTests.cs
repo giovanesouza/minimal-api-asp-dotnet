@@ -50,11 +50,11 @@ namespace Test.Requests
         public async Task CreateShouldReturnForbiddenWhenNotAdmin()
         {
             // Arrange
-            var newAdmin = new Administrator
+            var newAdmin = new AdministratorDTO
             {
                 Email = "forbidden@test.com",
                 Password = "123456",
-                Profile = "Viewer"
+                Profile = Profile.Editor
             };
 
             // Act
