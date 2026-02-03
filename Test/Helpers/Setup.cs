@@ -18,7 +18,6 @@ namespace Test.Helpers
         public static TestContext _testContext = default!;
         public static WebApplicationFactory<Startup> _http = default!;
         public static HttpClient _client = default!;
-        private static string? _token;
 
         public static void ClassInit(TestContext testContext)
         {
@@ -31,7 +30,9 @@ namespace Test.Helpers
 
                 builder.ConfigureServices(services =>
                 {
+                    // Replace real services with mocks
                     services.AddScoped<IAdministratorService, AdministratorServiceMock>();
+                    services.AddScoped<IVehicleService, VehicleServiceMock>();
                 });
 
             });
@@ -73,8 +74,6 @@ namespace Test.Helpers
                 new AuthenticationHeaderValue("Bearer", logged!.Token);
         }
 
-        public static void ClearAuthentication() =>
-            _client.DefaultRequestHeaders.Authorization = null;
-
+        public static void ClearAuthentication() => _client.DefaultRequestHeaders.Authorization = null;
     }
 }
